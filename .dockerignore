@@ -1,8 +1,28 @@
-.examples
-Dockerfile
-.github
-.idea
+# Version control
 .git
+.github
+
+# Docker
+Dockerfile
+
+# Development
+.idea
+.examples
+.dockerignore
+
+# Web assets 
 web/app
-*.db
+
+# Testing
 testdata
+test/
+
+# Documentation
+*.md
+docs/
+
+# Build artifacts
+*.db
+
+# Make
+Makefile

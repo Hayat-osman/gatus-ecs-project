@@ -6,16 +6,16 @@
 # OS
 .DS_Store
 
-# JS
-node_modules
-
 # Go
 /vendor
 
-# Misc
-*.db
-*.db-shm
-*.db-wal
-gatus
-config/config.yml
-config.yaml
+# Terraform
+*.tfstate
+*.tfstate.backup
+.terraform/
+*.tfvars
+!example.tfvars
+
+# Secrets
+*.pem
+*.key
