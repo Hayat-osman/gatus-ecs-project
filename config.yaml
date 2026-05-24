@@ -2,34 +2,14 @@ web:
   port: 8080
 
 endpoints:
-  
-  - name: DNS Resolution
-    group: network
-    url: "8.8.8.8"
-    interval: 5m
-    dns:
-      query-name: "hayats-labs.com"
-      query-type: "A"
-    conditions:
-      - "[DNS_RCODE] == NOERROR"
-      - "[BODY] == pat(*.*.*.*)"
 
-  - name: ALB DNS Resolution
-    group: network
-    url: "8.8.8.8"
-    interval: 5m
-    dns:
-      query-name: "tm.hayats-labs.com"
-      query-type: "CNAME"
+  - name: App Health
+    group: application
+    url: "https://tm.hayats-labs.com"
+    interval: 30s
     conditions:
-      - "[DNS_RCODE] == NOERROR"
-
-  - name: ICMP Ping
-    group: network
-    url: "icmp://hayats-labs.com"
-    interval: 1m
-    conditions:
-      - "[CONNECTED] == true"
+      - "[STATUS] == 200"
+      - "[RESPONSE_TIME] < 500"
 
   - name: TLS Certificate
     group: security
@@ -45,27 +25,23 @@ endpoints:
     conditions:
       - "[DOMAIN_EXPIRATION] > 720h"
 
-  # Application Layer
-  - name: App Health
-    group: application
-    url: "https://tm.hayats-labs.com"
-    interval: 30s
+  - name: Google
+    group: external
+    url: "https://www.google.com"
+    interval: 5m
     conditions:
       - "[STATUS] == 200"
-      - "[RESPONSE_TIME] < 500"
-      - "[BODY].status == UP"
 
-  # External Dependencies
-  - name: AWS Route53
-    group: dependencies
-    url: "https://route53.amazonaws.com"
+  - name: YouTube
+    group: external
+    url: "https://www.youtube.com"
     interval: 5m
     conditions:
       - "[STATUS] == 200"
 
   - name: GitHub
-    group: dependencies
-    url: "https://api.github.com"
+    group: external
+    url: "https://github.com"
     interval: 5m
     conditions:
       - "[STATUS] == 200"
