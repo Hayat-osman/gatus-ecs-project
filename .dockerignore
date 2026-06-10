@@ -10,7 +10,7 @@ Dockerfile
 .examples
 .dockerignore
 
-# Web assets 
+# Web assets
 web/app
 
 # Testing

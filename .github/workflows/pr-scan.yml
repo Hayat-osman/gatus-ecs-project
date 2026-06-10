@@ -1,0 +1,47 @@
+name: PR - Build & Scan
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'Dockerfile'
+      - 'config.yaml'
+      - 'app/**.go'
+      - 'app/go.mod'
+      - 'app/go.sum'
+
+permissions:
+  contents: read
+
+env:
+  ECR_REPOSITORY: gatus
+
+jobs:
+  scan:
+    name: Build & Scan
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build Docker image (with cache)
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          platforms: linux/amd64
+          load: true
+          tags: ${{ env.ECR_REPOSITORY }}:${{ github.sha }}
+          cache-from: type=gha,scope=gatus-build
+          cache-to: type=gha,mode=max,scope=gatus-build
+
+      - name: Scan image with Grype
+        uses: anchore/scan-action@v6
+        with:
+          image: "${{ env.ECR_REPOSITORY }}:${{ github.sha }}"
+          fail-build: "true"
+          severity-cutoff: high
+          output-format: table

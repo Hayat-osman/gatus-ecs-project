@@ -1,0 +1,66 @@
+name: Terraform CI - Plan
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'infra/**'
+
+permissions:
+  id-token: write
+  contents: read
+
+env:
+  AWS_REGION: eu-west-2
+
+jobs:
+  plan:
+    name: Terraform Plan
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Configure AWS credentials via OIDC
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.TF_PLAN_ROLE_ARN }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+
+      - name: Terraform Init
+        working-directory: infra
+        run: terraform init
+
+      - name: Terraform Validate
+        working-directory: infra
+        run: terraform validate
+
+      - name: Setup TFLint
+        uses: terraform-linters/setup-tflint@v4
+
+      - name: Run TFLint
+        working-directory: infra
+        run: |
+          tflint --init
+          tflint
+
+      - name: Run Checkov
+        uses: bridgecrewio/checkov-action@v12
+        with:
+          directory: infra
+
+      - name: Terraform Plan
+        working-directory: infra
+        run: terraform plan -no-color
+
+      - name: Plan Summary
+        working-directory: infra
+        if: always()
+        run: |
+          echo "## Terraform Plan 📋" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "Plan ran on this PR. Review before merging." >> $GITHUB_STEP_SUMMARY

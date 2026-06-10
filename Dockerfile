@@ -2,11 +2,11 @@ FROM cgr.dev/chainguard/go@sha256:de16290c696963903cb430c6dfd1842defca9006b97e67
 
 WORKDIR /app
 
-COPY go.mod go.sum ./
+COPY app/go.mod app/go.sum ./
 
 RUN go mod download
 
-COPY . .
+COPY app/ .
 
 RUN CGO_ENABLED=0 GOOS=linux go build -a -o /gatus .
 

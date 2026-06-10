@@ -1,0 +1,58 @@
+name: CD - Deploy to ECS
+
+on:
+  workflow_run:
+    workflows: ["CI - Build & Push"]
+    types: [completed]
+    branches: [main]
+
+concurrency:
+  group: deploy-production
+  cancel-in-progress: true
+
+permissions:
+  id-token: write
+  contents: read
+
+env:
+  AWS_REGION: eu-west-2
+  ECR_REPOSITORY: gatus
+  ECS_CLUSTER: gatus-dev-cluster
+  ECS_SERVICE: gatus-dev-service
+  CONTAINER_NAME: gatus
+
+jobs:
+  auth:
+    name: Authenticate to AWS
+    runs-on: ubuntu-latest
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    outputs:
+      image: ${{ steps.image.outputs.uri }}
+
+    steps:
+      - name: Configure AWS credentials via OIDC
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.DEPLOY_ROLE_ARN }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Login to Amazon ECR
+        id: ecr-login
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Build image URI
+        id: image
+        env:
+          ECR_REGISTRY: ${{ steps.ecr-login.outputs.registry }}
+        run: |
+          echo "uri=$ECR_REGISTRY/${{ env.ECR_REPOSITORY }}:${{ github.event.workflow_run.head_sha }}" >> $GITHUB_OUTPUT
+
+  deploy:
+    needs: auth
+    uses: ./.github/workflows/reusable-ecs-deploy.yml
+    with:
+      cluster: gatus-dev-cluster
+      service: gatus-dev-service
+      container_name: gatus
+      image: ${{ needs.auth.outputs.image }}
+      aws_region: eu-west-2

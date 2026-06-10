@@ -18,4 +18,6 @@
 
 # Secrets
 *.pem
-*.key
+*.keyaws/
+aws/
+awscliv2.zip

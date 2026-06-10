@@ -1,0 +1,111 @@
+name: Reusable - ECS Deploy
+
+on:
+  workflow_call:
+    inputs:
+      cluster:
+        required: true
+        type: string
+      service:
+        required: true
+        type: string
+      container_name:
+        required: true
+        type: string
+      image:
+        required: true
+        type: string
+      aws_region:
+        required: true
+        type: string
+      health_check_url:
+        required: true
+        type: string
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  deploy:
+    name: Deploy to ECS
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Configure AWS credentials via OIDC
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.DEPLOY_ROLE_ARN }}
+          aws-region: ${{ inputs.aws_region }}
+
+      - name: Fetch current task definition
+        run: |
+          aws ecs describe-task-definition \
+            --task-definition ${{ inputs.service }} \
+            --query taskDefinition \
+            > task-def.json
+
+      - name: Update image in task definition
+        run: |
+          jq --arg IMAGE "${{ inputs.image }}" \
+            --arg CONTAINER "${{ inputs.container_name }}" \
+            '.containerDefinitions |= map(if .name == $CONTAINER then .image = $IMAGE else . end)' \
+            task-def.json > updated-task-def.json
+
+      - name: Clean task definition metadata
+        run: |
+          jq 'del(.taskDefinitionArn, .revision, .status, .requiresAttributes, .compatibilities, .registeredAt, .registeredBy)' \
+            updated-task-def.json > clean-task-def.json
+
+      - name: Register new task definition
+        id: register
+        run: |
+          NEW_ARN=$(aws ecs register-task-definition \
+            --cli-input-json file://clean-task-def.json \
+            --query 'taskDefinition.taskDefinitionArn' \
+            --output text)
+          echo "task_def_arn=$NEW_ARN" >> $GITHUB_OUTPUT
+
+      - name: Update ECS service
+        run: |
+          aws ecs update-service \
+            --cluster ${{ inputs.cluster }} \
+            --service ${{ inputs.service }} \
+            --task-definition ${{ steps.register.outputs.task_def_arn }}
+
+      - name: Wait for service stability
+        run: |
+          aws ecs wait services-stable \
+            --cluster ${{ inputs.cluster }} \
+            --services ${{ inputs.service }}
+          echo "### Deployment complete :rocket:" >> $GITHUB_STEP_SUMMARY
+          echo "**Image:** \`${{ inputs.image }}\`" >> $GITHUB_STEP_SUMMARY
+
+      - name: Health Check
+        run: |
+          URL="${{ inputs.health_check_url }}"
+          MAX_ATTEMPTS=10
+          DELAY=30
+          for i in $(seq 1 $MAX_ATTEMPTS); do
+            echo "Attempt $i of $MAX_ATTEMPTS..."
+            STATUS=$(curl -s -o /dev/null -w "%{http_code}" "$URL")
+            if [ "$STATUS" = "200" ]; then
+              echo "## Health Check ✅" >> $GITHUB_STEP_SUMMARY
+              echo "" >> $GITHUB_STEP_SUMMARY
+              echo "| Item | Value |" >> $GITHUB_STEP_SUMMARY
+              echo "|------|-------|" >> $GITHUB_STEP_SUMMARY
+              echo "| **URL** | $URL |" >> $GITHUB_STEP_SUMMARY
+              echo "| **Status** | $STATUS |" >> $GITHUB_STEP_SUMMARY
+              echo "| **Attempts** | $i |" >> $GITHUB_STEP_SUMMARY
+              exit 0
+            fi
+            echo "Status: $STATUS - waiting ${DELAY}s..."
+            sleep $DELAY
+          done
+          echo "## Health Check ❌" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| Item | Value |" >> $GITHUB_STEP_SUMMARY
+          echo "|------|-------|" >> $GITHUB_STEP_SUMMARY
+          echo "| **URL** | $URL |" >> $GITHUB_STEP_SUMMARY
+          echo "| **Status** | Failed after $MAX_ATTEMPTS attempts |" >> $GITHUB_STEP_SUMMARY
+          exit 1
