@@ -43,7 +43,7 @@ resource "aws_ecs_task_definition" "main" {
       mountPoints = [
         {
           sourceVolume  = "gatus-data"
-          containerPath = "/data"
+          containerPath = "/gatus"
           readOnly      = false
         }
       ]
@@ -64,8 +64,6 @@ resource "aws_ecs_task_definition" "main" {
       }
 
       readonlyRootFilesystem = true
-
-
     }
   ])
 
@@ -109,6 +107,10 @@ resource "aws_ecs_service" "main" {
     target_group_arn = var.target_group_arn
     container_name   = "gatus"
     container_port   = var.container_port
+  }
+
+  lifecycle {
+    ignore_changes = [task_definition, desired_count]
   }
 
   tags = merge(var.common_tags, {

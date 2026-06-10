@@ -3,8 +3,7 @@ variable "name_prefix" {
 }
 
 variable "common_tags" {
-  type    = map(string)
-  default = {}
+  type = map(string)
 }
 
 variable "vpc_id" {

@@ -32,7 +32,6 @@ resource "aws_security_group" "alb" {
   })
 }
 
-
 resource "aws_security_group" "ecs" {
   name        = "${var.name_prefix}-ecs-sg"
   description = "Security group for ECS - allows traffic from ALB only"

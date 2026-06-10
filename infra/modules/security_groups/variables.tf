@@ -11,7 +11,6 @@ variable "name_prefix" {
 variable "common_tags" {
   description = "Common tags"
   type        = map(string)
-  default     = {}
 }
 
 variable "ecs_ingress_ports" {

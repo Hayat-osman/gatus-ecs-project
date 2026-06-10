@@ -13,13 +13,13 @@ concurrency:
 permissions:
   id-token: write
   contents: read
-
+  
 env:
-  AWS_REGION: eu-west-2
-  ECR_REPOSITORY: gatus
-  ECS_CLUSTER: gatus-dev-cluster
-  ECS_SERVICE: gatus-dev-service
-  CONTAINER_NAME: gatus
+  AWS_REGION: ${{ vars.AWS_REGION }}
+  ECR_REPOSITORY: ${{ vars.ECR_REPOSITORY }}
+  ECS_CLUSTER: ${{ vars.ECS_CLUSTER_NAME }}
+  ECS_SERVICE: ${{ vars.ECS_SERVICE_NAME }}
+  CONTAINER_NAME: ${{ vars.CONTAINER_NAME }}
 
 jobs:
   auth:

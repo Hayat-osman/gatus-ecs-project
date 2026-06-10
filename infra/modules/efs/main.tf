@@ -2,7 +2,9 @@ resource "aws_efs_file_system" "main" {
   creation_token = "${var.name_prefix}-efs"
   encrypted      = true
 
-
+  lifecycle {
+    prevent_destroy = true
+  }
 
   tags = merge(var.common_tags, {
     Name = "${var.name_prefix}-efs"

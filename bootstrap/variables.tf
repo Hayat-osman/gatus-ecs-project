@@ -1,24 +1,24 @@
 variable "aws_region" {
-  type        = string
-  default     = "eu-west-2"
+  type    = string
+  default = "eu-west-2"
 }
 
 variable "github_org" {
-  type        = string
+  type = string
 }
 
 variable "github_repo" {
-  type        = string
+  type = string
 }
 
 variable "ecr_repository_name" {
-  type        = string
+  type = string
 }
 
 variable "ecs_task_execution_role_name" {
-  type        = string
+  type = string
 }
 
 variable "ecs_task_role_name" {
-  type        = string
+  type = string
 }
