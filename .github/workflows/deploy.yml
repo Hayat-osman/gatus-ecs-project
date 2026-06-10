@@ -13,13 +13,10 @@ concurrency:
 permissions:
   id-token: write
   contents: read
-  
+
 env:
   AWS_REGION: ${{ vars.AWS_REGION }}
   ECR_REPOSITORY: ${{ vars.ECR_REPOSITORY }}
-  ECS_CLUSTER: ${{ vars.ECS_CLUSTER_NAME }}
-  ECS_SERVICE: ${{ vars.ECS_SERVICE_NAME }}
-  CONTAINER_NAME: ${{ vars.CONTAINER_NAME }}
 
 jobs:
   auth:
@@ -50,9 +47,11 @@ jobs:
   deploy:
     needs: auth
     uses: ./.github/workflows/reusable-ecs-deploy.yml
+    secrets: inherit
     with:
-      cluster: gatus-dev-cluster
-      service: gatus-dev-service
-      container_name: gatus
+      cluster: ${{ vars.ECS_CLUSTER_NAME }}
+      service: ${{ vars.ECS_SERVICE_NAME }}
+      container_name: ${{ vars.CONTAINER_NAME }}
       image: ${{ needs.auth.outputs.image }}
-      aws_region: eu-west-2
+      aws_region: ${{ vars.AWS_REGION }}
+      health_check_url: "https://tm.hayats-labs.com"

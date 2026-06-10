@@ -1,10 +1,10 @@
 name: Terraform CD - Apply
 
 on:
-  workflow_run:
-    workflows: ["Terraform CI - Plan"]
-    types: [completed]
+  push:
     branches: [main]
+    paths:
+      - 'infra/**'
 
 concurrency:
   group: terraform-apply
@@ -15,14 +15,12 @@ permissions:
   contents: read
 
 env:
-  AWS_REGION: eu-west-2
+  AWS_REGION: ${{ vars.AWS_REGION }}
 
 jobs:
   apply:
     name: Terraform Apply
     runs-on: ubuntu-latest
-    if: ${{ github.event.workflow_run.conclusion == 'success' }}
-    environment: production
 
     steps:
       - name: Checkout code
@@ -37,17 +35,13 @@ jobs:
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
 
-      - name: Download plan artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: tfplan
-          path: infra
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          run-id: ${{ github.event.workflow_run.id }}
+      - name: Terraform Init
+        working-directory: infra
+        run: terraform init
 
       - name: Terraform Apply
         working-directory: infra
-        run: terraform apply -auto-approve tfplan
+        run: terraform apply -auto-approve
 
       - name: Apply Summary
         working-directory: infra
@@ -55,4 +49,4 @@ jobs:
         run: |
           echo "## Terraform Apply ✅" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
-          echo "Infrastructure deployed successfully." >> $GITHUB_STEP_SUMMARY
+          echo "Infrastructure deployed." >> $GITHUB_STEP_SUMMARY

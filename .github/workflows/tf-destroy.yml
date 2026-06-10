@@ -13,7 +13,7 @@ permissions:
   contents: read
 
 env:
-  AWS_REGION: eu-west-2
+  AWS_REGION: ${{ vars.AWS_REGION }}
   TF_WORKING_DIR: infra
 
 jobs:
