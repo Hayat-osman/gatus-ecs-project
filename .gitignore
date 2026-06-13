@@ -15,7 +15,7 @@
 .terraform/
 *.tfvars
 !example.tfvars
-.terraform.lock.hcl
+infra/modules/**/.terraform.lock.hcl
 
 # Secrets
 *.pem
