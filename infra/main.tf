@@ -101,10 +101,12 @@ module "cloudwatch" {
 module "autoscaling" {
   source = "./modules/autoscaling"
 
-  name_prefix      = local.name_prefix
-  cluster_name     = module.ecs.cluster_name
-  service_name     = module.ecs.service_name
-  min_capacity     = var.desired_count
-  max_capacity     = var.desired_count * 2
-  cpu_target_value = var.autoscaling_cpu_target
+  name_prefix        = local.name_prefix
+  cluster_name       = module.ecs.cluster_name
+  service_name       = module.ecs.service_name
+  min_capacity       = var.desired_count
+  max_capacity       = var.desired_count * 2
+  cpu_target_value   = var.autoscaling_cpu_target
+  scale_out_cooldown = var.autoscaling_scale_out_cooldown
+  scale_in_cooldown  = var.autoscaling_scale_in_cooldown
 }
