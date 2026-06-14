@@ -13,7 +13,7 @@
 *.tfstate
 *.tfstate.backup
 .terraform/
-*.tfvars
+bootstrap/terraform.tfvars
 !example.tfvars
 infra/modules/**/.terraform.lock.hcl
 infra/modules/**/.terraform

@@ -41,6 +41,8 @@ jobs:
 
       - name: Terraform Apply
         working-directory: infra
+        env:
+          TF_VAR_container_image: ${{ secrets.CONTAINER_IMAGE }}
         run: terraform apply -auto-approve
 
       - name: Apply Summary
