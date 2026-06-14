@@ -40,8 +40,13 @@ jobs:
 
       - name: Fetch current task definition
         run: |
+          TASK_DEF=$(aws ecs describe-services \
+            --cluster ${{ inputs.cluster }} \
+            --services ${{ inputs.service }} \
+            --query 'services[0].taskDefinition' \
+            --output text)
           aws ecs describe-task-definition \
-            --task-definition ${{ inputs.service }} \
+            --task-definition $TASK_DEF \
             --query taskDefinition \
             > task-def.json
 
