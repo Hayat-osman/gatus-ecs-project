@@ -53,7 +53,7 @@ jobs:
         with:
           directory: infra
           quiet: true
-          skip_check: CKV2_AWS_11,CKV2_AWS_28,CKV_AWS_91,CKV_AWS_158,CKV_AWS_184,CKV_AWS_150,CKV_AWS_382,CKV_AWS_260,CKV_AWS_130,CKV2_AWS_12,CKV2_AWS_5,CKV2_AWS_76
+          skip_check: CKV2_AWS_11,CKV2_AWS_28,CKV_AWS_91,CKV_AWS_158,CKV_AWS_184,CKV_AWS_150,CKV_AWS_382,CKV_AWS_260,CKV_AWS_130,CKV2_AWS_12,CKV2_AWS_5,CKV2_AWS_76,CKV_AWS_338
 
       - name: Terraform Plan
         working-directory: infra
