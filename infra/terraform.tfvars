@@ -27,7 +27,7 @@ private_subnets = {
 
 ecs_ingress_ports = [8080]
 
-domain_name = "your-domain.com"
+domain_name = "hayats-labs.com"
 
 efs_config = {
   uid         = 65532
@@ -36,14 +36,11 @@ efs_config = {
   permissions = "755"
 }
 
-container_image  = "ACCOUNT_ID.dkr.ecr.REGION.amazonaws.com/gatus:IMAGE_TAG"
-container_port   = 8080
-container_cpu    = 256
-container_memory = 512
-retention_in_days = 30
-
+container_port                 = 8080
+container_cpu                  = 256
+container_memory               = 512
+retention_in_days              = 30
 autoscaling_cpu_target         = 70
 autoscaling_scale_out_cooldown = 60
 autoscaling_scale_in_cooldown  = 300
-
-desired_count = 2
+desired_count                  = 2
