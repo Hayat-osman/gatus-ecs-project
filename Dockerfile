@@ -17,7 +17,7 @@ LABEL org.opencontainers.image.source="https://github.com/Hayat-osman/gatus-ecs-
       org.opencontainers.image.description="Gatus health monitoring on AWS ECS Fargate" \
       org.opencontainers.image.version="1.0.0"
 
-COPY --from=builder /gatus /gatus
+COPY --from=builder /gatus /usr/bin/gatus
 
 COPY config.yaml /config/config.yaml
 
@@ -25,4 +25,4 @@ ENV GATUS_LOG_LEVEL="INFO"
 
 EXPOSE 8080
 
-ENTRYPOINT ["/gatus"]
+ENTRYPOINT ["/usr/bin/gatus"]

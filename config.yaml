@@ -1,6 +1,10 @@
 web:
   port: 8080
 
+storage:
+  type: sqlite
+  path: /gatus/data.db
+
 endpoints:
 
   - name: App Health
@@ -8,40 +12,41 @@ endpoints:
     url: "https://tm.hayats-labs.com"
     interval: 30s
     conditions:
+      - "[CONNECTED] == true"
       - "[STATUS] == 200"
       - "[RESPONSE_TIME] < 500"
 
   - name: TLS Certificate
     group: security
     url: "https://tm.hayats-labs.com"
-    interval: 1h
+    interval: 60s
     conditions:
       - "[CERTIFICATE_EXPIRATION] > 720h"
 
   - name: Domain Expiration
     group: security
     url: "https://hayats-labs.com"
-    interval: 24h
+    interval: 60s
     conditions:
       - "[DOMAIN_EXPIRATION] > 720h"
+
+  - name: HTTP to HTTPS Redirect
+    group: security
+    url: "http://tm.hayats-labs.com"
+    interval: 60s
+    conditions:
+      - "[STATUS] == 301"
 
   - name: Google
     group: external
     url: "https://www.google.com"
-    interval: 5m
-    conditions:
-      - "[STATUS] == 200"
-
-  - name: YouTube
-    group: external
-    url: "https://www.youtube.com"
-    interval: 5m
+    interval: 60s
     conditions:
       - "[STATUS] == 200"
 
   - name: GitHub
     group: external
     url: "https://github.com"
-    interval: 5m
+    interval: 60s
     conditions:
       - "[STATUS] == 200"
