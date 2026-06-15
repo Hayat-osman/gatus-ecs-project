@@ -19,14 +19,14 @@ endpoints:
   - name: TLS Certificate
     group: security
     url: "https://tm.hayats-labs.com"
-    interval: 60s
+    interval: 300s
     conditions:
       - "[CERTIFICATE_EXPIRATION] > 720h"
 
   - name: Domain Expiration
     group: security
     url: "https://hayats-labs.com"
-    interval: 60s
+    interval: 300s
     conditions:
       - "[DOMAIN_EXPIRATION] > 720h"
 
