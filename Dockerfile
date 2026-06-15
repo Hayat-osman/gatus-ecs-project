@@ -26,3 +26,4 @@ ENV GATUS_LOG_LEVEL="INFO"
 EXPOSE 8080
 
 ENTRYPOINT ["/usr/bin/gatus"]
+
