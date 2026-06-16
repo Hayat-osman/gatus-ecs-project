@@ -124,7 +124,10 @@ resource "aws_iam_role_policy" "tf_plan" {
           "route53:Get*",
           "route53:List*",
           "elasticfilesystem:Describe*",
-          "logs:Describe*"
+          "logs:ListTagsForResource",
+          "logs:Describe*",
+          "application-autoscaling:Describe*",
+          "application-autoscaling:ListTagsForResource"
         ]
         Resource = "*"
       },

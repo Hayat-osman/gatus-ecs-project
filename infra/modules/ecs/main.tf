@@ -40,14 +40,6 @@ resource "aws_ecs_task_definition" "main" {
         }
       ]
 
-      mountPoints = [
-        {
-          sourceVolume  = "gatus-data"
-          containerPath = "/gatus"
-          readOnly      = false
-        }
-      ]
-
       logConfiguration = {
         logDriver = "awslogs"
         options = {
@@ -66,20 +58,6 @@ resource "aws_ecs_task_definition" "main" {
       readonlyRootFilesystem = true
     }
   ])
-
-  volume {
-    name = "gatus-data"
-
-    efs_volume_configuration {
-      file_system_id     = var.efs_file_system_id
-      transit_encryption = "ENABLED"
-
-      authorization_config {
-        access_point_id = var.efs_access_point_id
-        iam             = "ENABLED"
-      }
-    }
-  }
 
   lifecycle {
     ignore_changes = [container_definitions]

@@ -38,13 +38,7 @@ variable "cloudwatch_log_group_name" {
   type = string
 }
 
-variable "efs_file_system_id" {
-  type = string
-}
 
-variable "efs_access_point_id" {
-  type = string
-}
 
 variable "private_subnet_ids" {
   type = list(string)

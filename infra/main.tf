@@ -28,15 +28,6 @@ module "acm" {
   common_tags = local.common_tags
 }
 
-module "efs" {
-  source = "./modules/efs"
-
-  name_prefix        = local.name_prefix
-  common_tags        = local.common_tags
-  efs_config         = var.efs_config
-  private_subnet_ids = module.vpc.private_subnet_ids
-  efs_sg_id          = module.security_groups.efs_sg_id
-}
 
 module "ecs" {
   source = "./modules/ecs"
@@ -52,8 +43,6 @@ module "ecs" {
   execution_role_arn        = module.iam.ecs_execution_role_arn
   task_role_arn             = module.iam.ecs_task_role_arn
   cloudwatch_log_group_name = module.cloudwatch.log_group_name
-  efs_file_system_id        = module.efs.efs_file_system_id
-  efs_access_point_id       = module.efs.efs_access_point_id
   private_subnet_ids        = module.vpc.private_subnet_ids
   ecs_sg_id                 = module.security_groups.ecs_sg_id
   target_group_arn          = module.alb.target_group_arn
@@ -64,7 +53,6 @@ module "iam" {
 
   name_prefix              = local.name_prefix
   common_tags              = local.common_tags
-  efs_file_system_arn      = module.efs.efs_file_system_arn
   cloudwatch_log_group_arn = module.cloudwatch.log_group_arn
 }
 

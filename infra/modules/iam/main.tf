@@ -57,14 +57,6 @@ resource "aws_iam_role_policy" "ecs_task" {
       {
         Effect = "Allow"
         Action = [
-          "elasticfilesystem:ClientMount",
-          "elasticfilesystem:ClientWrite"
-        ]
-        Resource = var.efs_file_system_arn
-      },
-      {
-        Effect = "Allow"
-        Action = [
           "logs:CreateLogStream",
           "logs:PutLogEvents"
         ]
