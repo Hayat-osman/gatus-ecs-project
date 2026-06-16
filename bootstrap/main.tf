@@ -123,6 +123,7 @@ resource "aws_iam_role_policy" "tf_plan" {
           "elasticloadbalancing:Describe*",
           "route53:Get*",
           "route53:List*",
+          "elasticfilesystem:Describe*",
           "logs:Describe*"
         ]
         Resource = "*"
