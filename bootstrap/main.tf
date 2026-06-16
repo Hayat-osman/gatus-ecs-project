@@ -126,7 +126,8 @@ resource "aws_iam_role_policy" "tf_plan" {
           "elasticfilesystem:Describe*",
           "logs:ListTagsForResource",
           "logs:Describe*",
-          "application-autoscaling:Describe*"
+          "application-autoscaling:Describe*",
+          "application-autoscaling:ListTagsForResource"
         ]
         Resource = "*"
       },
