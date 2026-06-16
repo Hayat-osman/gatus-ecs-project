@@ -1,9 +1,6 @@
 web:
   port: 8080
 
-storage:
-  type: sqlite
-  path: /gatus/data.db
 
 endpoints:
 
