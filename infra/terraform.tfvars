@@ -29,12 +29,6 @@ ecs_ingress_ports = [8080]
 
 domain_name = "hayats-labs.com"
 
-efs_config = {
-  uid         = 65532
-  gid         = 65532
-  path        = "/gatus"
-  permissions = "755"
-}
 
 container_port                 = 8080
 container_cpu                  = 256

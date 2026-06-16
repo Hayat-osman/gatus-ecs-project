@@ -7,8 +7,3 @@ output "ecs_sg_id" {
   description = "ECS security group ID"
   value       = aws_security_group.ecs.id
 }
-
-output "efs_sg_id" {
-  description = "EFS security group ID"
-  value       = aws_security_group.efs.id
-}

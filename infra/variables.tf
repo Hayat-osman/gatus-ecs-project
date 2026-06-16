@@ -41,15 +41,6 @@ variable "domain_name" {
 }
 
 
-variable "efs_config" {
-  description = "EFS access point configuration - uid/gid must match container user"
-  type = object({
-    uid         = number
-    gid         = number
-    path        = string
-    permissions = string
-  })
-}
 
 variable "container_image" {
   description = "ECR image URI for Gatus container"

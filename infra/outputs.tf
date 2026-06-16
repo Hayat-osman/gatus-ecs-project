@@ -34,13 +34,6 @@ output "certificate_arn" {
   value = module.acm.certificate_arn
 }
 
-output "efs_file_system_id" {
-  value = module.efs.efs_file_system_id
-}
-
-output "efs_access_point_id" {
-  value = module.efs.efs_access_point_id
-}
 
 output "alb_sg_id" {
   value = module.security_groups.alb_sg_id
@@ -50,9 +43,6 @@ output "ecs_sg_id" {
   value = module.security_groups.ecs_sg_id
 }
 
-output "efs_sg_id" {
-  value = module.security_groups.efs_sg_id
-}
 
 output "ecs_execution_role_arn" {
   value = module.iam.ecs_execution_role_arn
