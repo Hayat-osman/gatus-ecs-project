@@ -41,4 +41,6 @@ jobs:
 
       - name: Terraform Destroy
         working-directory: ${{ env.TF_WORKING_DIR }}
+        env:
+          TF_VAR_container_image: ${{ secrets.CONTAINER_IMAGE }}
         run: terraform destroy -auto-approve
