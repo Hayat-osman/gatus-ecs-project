@@ -28,9 +28,9 @@ endpoints:
       - "[DOMAIN_EXPIRATION] > 720h"
 
   - name: HTTP to HTTPS Redirect
-    group: security
     url: "http://tm.hayats-labs.com"
-    interval: 60s
+    client:
+     ignore-redirect: true
     conditions:
       - "[STATUS] == 301"
 
