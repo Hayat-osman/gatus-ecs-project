@@ -1,6 +1,8 @@
 web:
   port: 8080
 
+storage:
+  type: memory
 
 endpoints:
 
