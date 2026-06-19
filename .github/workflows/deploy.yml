@@ -8,7 +8,7 @@ on:
   workflow_dispatch:
     inputs:
       image_tag:
-        description: "Image tag to deploy (commit SHA or 'latest')"
+        description: "Image tag to deploy"
         required: true
 concurrency:
   group: deploy-production
