@@ -19,9 +19,9 @@ I chose ECS Fargate because it removes the operational overhead of managing and 
 - **Route53** -  DNS hosted zone and records for the custom domain
 - **ACM** - TLS certificate enabling HTTPS on the ALB
 - **ECR** -  private registry storing the Gatus container images
-- **CloudWatch Logs** - centralized logs from the ECS tasks
+- **CloudWatch Logs** - centralised logs from the ECS tasks
 - **Application Auto Scaling** -  scales the ECS service based on CPU
-- **IAM** -  OIDC-based roles with least-privilege permissions for the pipelines
+- **IAM** -  OIDC-based roles with least-privilege permissions for the pipelines, plus task execution and task roles for ECS
 
 ## Architecture Diagram
 
@@ -136,8 +136,7 @@ gatus-ecs-project/
 ## Docker
 
 - **Multi-stage build** reducing the final image size by 93% (738 MB → 51.3 MB)
-- **Chainguard hardened images** (Go builder and static runtime) providing a minimal, non-root, zero-CVE base image
-Distroless, non-root runtime minimising the container attack surface
+- **Chainguard hardened images** (Go builder and static runtime) providing a minimal, distroless, non-root, zero-CVE base image that reduces the container attack surface
 - **Layer caching** optimised by copying dependency files before source code
 - **Immutable git commit SHA tagging** for deployment traceability and rollbacks
 
