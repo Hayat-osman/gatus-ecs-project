@@ -2,13 +2,14 @@ web:
   port: 8080
 
 storage:
-  type: memory
+  type: postgres
+  path: "postgres://gatusadmin:$(DB_PASSWORD)@$(DB_HOST):5432/gatusdb?sslmode=require"
 
 endpoints:
 
   - name: App Health
     group: application
-    url: "https://tm.hayats-labs.com"
+    url: "https://tm.hayat-labs.co.uk"
     interval: 30s
     conditions:
       - "[CONNECTED] == true"
@@ -17,38 +18,36 @@ endpoints:
 
   - name: TLS Certificate
     group: security
-    url: "https://tm.hayats-labs.com"
+    url: "https://tm.hayat-labs.co.uk"
     interval: 300s
     conditions:
       - "[CERTIFICATE_EXPIRATION] > 720h"
 
-  - name: Domain Expiration
-    group: security
-    url: "https://hayats-labs.com"
-    interval: 300s
-    conditions:
-      - "[DOMAIN_EXPIRATION] > 720h"
-
   - name: HTTP to HTTPS Redirect
-    url: "http://tm.hayats-labs.com"
+    group: application
+    url: "http://tm.hayat-labs.co.uk"
     client:
-     ignore-redirect: true
+      ignore-redirect: true
     conditions:
       - "[STATUS] == 301"
 
-  - name: Google
+  - name: Companies House API
     group: external
-    url: "https://www.google.com"
+    url: "https://api.company-information.service.gov.uk"
+    interval: 60s
+    conditions:
+      - "[STATUS] == 401"
+
+  - name: Companies House Search
+    group: external
+    url: "https://api.company-information.service.gov.uk/search/companies?q=test"
+    interval: 60s
+    conditions:
+      - "[STATUS] == 401"
+
+  - name: Companies House Website
+    group: external
+    url: "https://find-and-update.company-information.service.gov.uk"
     interval: 60s
     conditions:
       - "[STATUS] == 200"
-
-  - name: GitHub
-    group: external
-    url: "https://github.com"
-    interval: 60s
-    conditions:
-      - "[STATUS] == 200"
-
-
-
