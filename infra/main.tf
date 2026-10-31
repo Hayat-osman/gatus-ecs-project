@@ -46,6 +46,7 @@ module "ecs" {
   private_subnet_ids        = module.vpc.private_subnet_ids
   ecs_sg_id                 = module.security_groups.ecs_sg_id
   target_group_arn          = module.alb.target_group_arn
+  db_secret_arn = data.aws_secretsmanager_secret.db.arn
 }
 
 module "iam" {
@@ -54,6 +55,7 @@ module "iam" {
   name_prefix              = local.name_prefix
   common_tags              = local.common_tags
   cloudwatch_log_group_arn = module.cloudwatch.log_group_arn
+  db_secret_arn = data.aws_secretsmanager_secret.db.arn
 }
 
 module "dns" {
@@ -81,9 +83,13 @@ module "alb" {
 module "cloudwatch" {
   source = "./modules/cloudwatch"
 
-  name_prefix       = local.name_prefix
-  common_tags       = local.common_tags
-  retention_in_days = var.retention_in_days
+  name_prefix              = local.name_prefix
+  common_tags              = local.common_tags
+  retention_in_days        = var.retention_in_days
+  alb_arn_suffix           = module.alb.arn_suffix
+  alarm_evaluation_periods = var.alarm_evaluation_periods
+  alarm_period_seconds     = var.alarm_period_seconds
+  alarm_5xx_threshold      = var.alarm_5xx_threshold
 }
 
 module "autoscaling" {
@@ -98,5 +104,34 @@ module "autoscaling" {
   scale_out_cooldown = var.autoscaling_scale_out_cooldown
   scale_in_cooldown  = var.autoscaling_scale_in_cooldown
 }
+module "rds" {
+  source = "./modules/rds"
 
-#
+  name_prefix        = local.name_prefix
+  common_tags        = local.common_tags
+  private_subnet_ids = module.vpc.private_subnet_ids
+  rds_sg_id          = module.security_groups.rds_sg_id
+  db_name            = var.db_name
+  db_username        = var.db_username
+  db_password        = jsondecode(data.aws_secretsmanager_secret_version.db_current.secret_string)["password"]
+  instance_class     = var.db_instance_class
+  allocated_storage  = var.db_allocated_storage
+  multi_az           = var.db_multi_az
+  deletion_protection     = var.db_deletion_protection
+  skip_final_snapshot     = var.db_skip_final_snapshot
+  backup_retention_period = var.db_backup_retention_period
+}
+
+module "codedeploy" {
+  source = "./modules/codedeploy"
+
+  name_prefix             = local.name_prefix
+  common_tags             = local.common_tags
+  ecs_cluster_name        = module.ecs.cluster_name
+  ecs_service_name        = module.ecs.service_name
+  https_listener_arn      = module.alb.https_listener_arn
+  blue_target_group_name  = module.alb.blue_target_group_name
+  green_target_group_name = module.alb.green_target_group_name
+  codedeploy_role_arn     = module.iam.codedeploy_role_arn
+  alb_5xx_alarm_name      = module.cloudwatch.alb_5xx_alarm_name
+}

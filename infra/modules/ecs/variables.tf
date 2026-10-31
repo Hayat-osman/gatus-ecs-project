@@ -55,3 +55,7 @@ variable "target_group_arn" {
 variable "desired_count" {
   type = number
 }
+variable "db_secret_arn" {
+  description = "ARN of Secrets Manager secret for DB credentials"
+  type        = string
+}
