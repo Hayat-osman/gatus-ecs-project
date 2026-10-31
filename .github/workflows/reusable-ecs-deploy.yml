@@ -21,6 +21,12 @@ on:
       health_check_url:
         required: true
         type: string
+      codedeploy_app:
+        required: true
+        type: string
+      codedeploy_group:
+        required: true
+        type: string
 
 permissions:
   id-token: write
@@ -71,20 +77,42 @@ jobs:
             --output text)
           echo "task_def_arn=$NEW_ARN" >> $GITHUB_OUTPUT
 
-      - name: Update ECS service
+      - name: Create CodeDeploy deployment
+        id: deploy
         run: |
-          aws ecs update-service \
-            --cluster ${{ inputs.cluster }} \
-            --service ${{ inputs.service }} \
-            --task-definition ${{ steps.register.outputs.task_def_arn }}
+          DEPLOYMENT_ID=$(aws deploy create-deployment \
+            --application-name ${{ inputs.codedeploy_app }} \
+            --deployment-group-name ${{ inputs.codedeploy_group }} \
+            --revision "{\"revisionType\":\"AppSpecContent\",\"appSpecContent\":{\"content\":\"{\\\"version\\\":0.0,\\\"Resources\\\":[{\\\"TargetService\\\":{\\\"Type\\\":\\\"AWS::ECS::Service\\\",\\\"Properties\\\":{\\\"TaskDefinition\\\":\\\"${{ steps.register.outputs.task_def_arn }}\\\",\\\"LoadBalancerInfo\\\":{\\\"ContainerName\\\":\\\"${{ inputs.container_name }}\\\",\\\"ContainerPort\\\":8080}}}}]}\"}}" \
+            --query 'deploymentId' \
+            --output text)
+          echo "deployment_id=$DEPLOYMENT_ID" >> $GITHUB_OUTPUT
+          echo "Deployment ID: $DEPLOYMENT_ID"
 
-      - name: Wait for service stability
+      - name: Wait for CodeDeploy deployment
         run: |
-          aws ecs wait services-stable \
-            --cluster ${{ inputs.cluster }} \
-            --services ${{ inputs.service }}
-          echo "### Deployment complete :rocket:" >> $GITHUB_STEP_SUMMARY
-          echo "**Image:** \`${{ inputs.image }}\`" >> $GITHUB_STEP_SUMMARY
+          DEPLOYMENT_ID="${{ steps.deploy.outputs.deployment_id }}"
+          for i in $(seq 1 40); do
+            STATUS=$(aws deploy get-deployment \
+              --deployment-id $DEPLOYMENT_ID \
+              --query 'deploymentInfo.status' \
+              --output text)
+            echo "Attempt $i: $STATUS"
+            if [ "$STATUS" = "Succeeded" ]; then
+              echo "### Deployment complete :rocket:" >> $GITHUB_STEP_SUMMARY
+              echo "**Deployment ID:** \`$DEPLOYMENT_ID\`" >> $GITHUB_STEP_SUMMARY
+              echo "**Image:** \`${{ inputs.image }}\`" >> $GITHUB_STEP_SUMMARY
+              exit 0
+            elif [ "$STATUS" = "Failed" ] || [ "$STATUS" = "Stopped" ]; then
+              aws deploy get-deployment \
+                --deployment-id $DEPLOYMENT_ID \
+                --query 'deploymentInfo.errorInformation'
+              exit 1
+            fi
+            sleep 30
+          done
+          echo "Timed out waiting for deployment"
+          exit 1
 
       - name: Health Check
         run: |
