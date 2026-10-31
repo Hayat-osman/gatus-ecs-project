@@ -27,7 +27,7 @@ private_subnets = {
 
 ecs_ingress_ports = [8080]
 
-domain_name = "hayats-labs.com"
+domain_name = "hayat-labs.co.uk"
 
 
 container_port                 = 8080
@@ -38,3 +38,16 @@ autoscaling_cpu_target         = 70
 autoscaling_scale_out_cooldown = 60
 autoscaling_scale_in_cooldown  = 300
 desired_count                  = 2
+
+db_name                    = "gatusdb"
+db_username                = "gatusadmin"
+db_instance_class          = "db.t3.micro"
+db_allocated_storage       = 20
+db_multi_az                = true
+db_deletion_protection     = true
+db_skip_final_snapshot     = false
+db_backup_retention_period = 7
+
+alarm_evaluation_periods = 2
+alarm_period_seconds     = 60
+alarm_5xx_threshold      = 10

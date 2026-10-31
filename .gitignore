@@ -17,6 +17,7 @@ bootstrap/terraform.tfvars
 !example.tfvars
 infra/modules/**/.terraform.lock.hcl
 infra/modules/**/.terraform
+infra/terraform.zip
 
 # Secrets
 *.pem
@@ -24,3 +25,4 @@ infra/modules/**/.terraform
 aws/
 awscliv2.zip
 actionlint
+bootstrap/terraform.zip

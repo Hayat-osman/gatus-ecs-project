@@ -85,3 +85,59 @@ variable "desired_count" {
   description = "Number of ECS tasks to run"
   type        = number
 }
+
+variable "db_name" {
+  description = "Database name"
+  type        = string
+}
+
+variable "db_username" {
+  description = "Database master username"
+  type        = string
+}
+
+variable "db_instance_class" {
+  description = "RDS instance class"
+  type        = string
+}
+
+variable "db_allocated_storage" {
+  description = "Allocated storage in GB"
+  type        = number
+}
+
+variable "db_multi_az" {
+  description = "Enable Multi-AZ for RDS"
+  type        = bool
+}
+
+variable "db_deletion_protection" {
+  description = "Enable deletion protection on RDS"
+  type        = bool
+}
+
+variable "db_skip_final_snapshot" {
+  description = "Skip final snapshot on RDS deletion"
+  type        = bool
+}
+
+variable "db_backup_retention_period" {
+  description = "Days to retain RDS automated backups"
+  type        = number
+}
+
+variable "alarm_evaluation_periods" {
+  description = "Number of periods the alarm must be in breach before triggering"
+  type        = number
+}
+
+variable "alarm_period_seconds" {
+  description = "Period in seconds for each alarm evaluation"
+  type        = number
+}
+
+variable "alarm_5xx_threshold" {
+  description = "Number of 5xx errors per period that triggers rollback"
+  type        = number
+}
+

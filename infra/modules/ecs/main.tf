@@ -33,10 +33,25 @@ resource "aws_ecs_task_definition" "main" {
         }
       ]
 
-      environment = [
+            environment = [
         {
           name  = "GATUS_CONFIG_PATH"
           value = "/config/config.yaml"
+        }
+      ]
+
+      secrets = [
+        {
+          name      = "DB_PASSWORD"
+          valueFrom = "${var.db_secret_arn}:password::"
+        },
+        {
+          name      = "DB_HOST"
+          valueFrom = "${var.db_secret_arn}:host::"
+        },
+        {
+          name      = "DB_USERNAME"
+          valueFrom = "${var.db_secret_arn}:username::"
         }
       ]
 
@@ -87,8 +102,12 @@ resource "aws_ecs_service" "main" {
     container_port   = var.container_port
   }
 
+    deployment_controller {
+    type = "CODE_DEPLOY"
+  }
+
   lifecycle {
-    ignore_changes = [task_definition, desired_count]
+    ignore_changes = [task_definition, desired_count, load_balancer]
   }
 
   tags = merge(var.common_tags, {

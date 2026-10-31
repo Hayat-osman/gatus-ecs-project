@@ -3,8 +3,7 @@ web:
 
 storage:
   type: postgres
-  path: "postgres://gatusadmin:$(DB_PASSWORD)@$(DB_HOST):5432/gatusdb?sslmode=require"
-
+  path: "postgres://gatusadmin:$DB_PASSWORD@$DB_HOST:5432/gatusdb?sslmode=require"
 endpoints:
 
   - name: App Health
