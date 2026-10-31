@@ -141,7 +141,3 @@ variable "alarm_5xx_threshold" {
   type        = number
 }
 
-variable "alb_arn_suffix" {
-  description = "ALB ARN suffix for CloudWatch metrics (the app/name/id part)"
-  type        = string
-}
