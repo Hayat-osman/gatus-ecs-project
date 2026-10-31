@@ -135,8 +135,8 @@ resource "aws_iam_role_policy" "tf_plan" {
         Effect = "Allow"
         Action = ["s3:GetObject", "s3:PutObject", "s3:DeleteObject", "s3:ListBucket"]
         Resource = [
-          "arn:aws:s3:::hayats-labs-terraform-state",
-          "arn:aws:s3:::hayats-labs-terraform-state/*"
+         "arn:aws:s3:::hayat-labs-tf-state",
+         "arn:aws:s3:::hayat-labs-tf-state/*"
         ]
       }
     ]
