@@ -60,4 +60,6 @@ jobs:
       container_name: ${{ vars.CONTAINER_NAME }}
       image: ${{ needs.auth.outputs.image }}
       aws_region: ${{ vars.AWS_REGION }}
-      health_check_url: "https://tm.hayats-labs.com"
+      health_check_url: "https://tm.hayat-labs.co.uk"
+      codedeploy_app: ${{ vars.CODEDEPLOY_APP }}
+      codedeploy_group: ${{ vars.CODEDEPLOY_GROUP }}
